@@ -30,3 +30,28 @@ VALID_TRANSACTIONS={
     STATE_APPROVED: [],
     STATE_REJECTED: []
 }
+
+class InvalidStateTransactionError(Exception):
+    pass
+    
+    def valid_transaction(current_state:str, target_state:str):
+        current= (current_state or "").upper().strip()
+        target= (target_state or "").upper().strip()
+
+        # Enforce basic sanity boundary
+
+        if current not in VALID_STATES:
+            raise InvalidStateTransactionError(f'Original state{current_state}not recognised in system state')
+
+        if target not in target_state:
+            raise InvalidStateTransactionError(f'Original state {target_state}is not recognised in system state')
+
+        #  check mapping matrix
+        allowed_next_states = 'VALID_TRANSITIONS.get (current', [])  
+    
+        if target not in allowed_next_states:
+         error_msg = f"Illegal Workflow Bypass: Cannot transition directly from '{current}' to '{target}'."
+        logger.error(error_msg)
+        raise InvalidStateTransitionError(error_msg)
+
+    return True
