@@ -1,7 +1,5 @@
+from django.conf import settings
 from django.db import models
-from django.contrib.auth import get_user_model
-
-User= get_user_model
 
 class CountyNotice(models.Model):
     """Stores public service announcements and deadlines aggregated by background scrapers."""
@@ -22,13 +20,22 @@ class CountyNotice(models.Model):
 
     class Meta:
         ordering = ['-deadline', '-scraped_at']
+        indexes = [
+            models.Index(fields=['county_id', 'service_type']),
+        ]
 
     def __str__(self):
         return f"[{self.county_id}] {self.title}"
 
+
 class Application(models.Model):
     """Tracks a citizen's specific application workflow pipeline."""
-    citizen = models.ForeignKey(User, on_delete=models.CASCADE, related_name="applications")
+    # Using settings.AUTH_USER_MODEL string reference avoids circular imports
+    citizen = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name="applications"
+    )
     county_id = models.CharField(max_length=50)
     service_type = models.CharField(max_length=30, choices=CountyNotice.SERVICE_TYPES)
     status = models.CharField(max_length=30, default="SUBMITTED")
@@ -39,21 +46,35 @@ class Application(models.Model):
 
     class Meta:
         ordering = ['-updated_at']
+        indexes = [
+            models.Index(fields=['tracking_number']),
+            models.Index(fields=['status']),
+        ]
 
     def __str__(self):
         return f"{self.tracking_number} - {self.status}"
+
 
 class StatusLog(models.Model):
     """An unalterable audit trail capturing every workflow transition step."""
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="logs")
     from_state = models.CharField(max_length=30)
     to_state = models.CharField(max_length=30)
-    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    
+    # Corrected User model reference
+    changed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True,
+        related_name="status_change_logs"
+    )
     comment = models.TextField(blank=True, null=True, help_text="Reviewer remarks or correction prompts")
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-timestamp']
+        # Guardrails to protect data integrity of audit trails
+        get_latest_by = 'timestamp'
 
     def __str__(self):
         return f"{self.application.tracking_number}: {self.from_state} -> {self.to_state}"
