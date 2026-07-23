@@ -25,3 +25,20 @@ class CountyNotice(models.Model):
 
     def __str__(self):
         return f"[{self.county_id}] {self.title}"
+
+class Application(models.Model):
+    """Tracks a citizen's specific application workflow pipeline."""
+    citizen = models.ForeignKey(User, on_delete=models.CASCADE, related_name="applications")
+    county_id = models.CharField(max_length=50)
+    service_type = models.CharField(max_length=30, choices=CountyNotice.SERVICE_TYPES)
+    status = models.CharField(max_length=30, default="SUBMITTED")
+    tracking_number = models.CharField(max_length=100, unique=True)
+    payload_data = models.JSONField(default=dict, help_text="Form field responses unique to the service")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f"{self.tracking_number} - {self.status}"
