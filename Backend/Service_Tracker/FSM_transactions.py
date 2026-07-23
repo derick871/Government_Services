@@ -55,3 +55,11 @@ def valid_transaction(current_state: str, target_state: str):
         raise InvalidStateTransactionError(error_msg)
 
     return True
+
+def get_allowed_next_status(current_state: str):
+    """
+    Help utility to dynamically tell the frontend UI which action buttons 
+    to render in the pipeline.
+    """
+    cleaned_state = (current_state or "").upper().strip()
+    return VALID_TRANSACTIONS.get(cleaned_state, [])
