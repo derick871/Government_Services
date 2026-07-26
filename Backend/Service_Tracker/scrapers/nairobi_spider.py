@@ -20,3 +20,21 @@ class NairobiSpiders(BaseScrapper):
              return extracted_record
 
             soup= BeautifulSoup(html_content,"html_parser") 
+
+            notice_elements = soup.find_all("div", class_="notice-card-layout")
+            
+            for element in notice_elements:
+                try:
+                    title_text = element.find("h3", class_="notice-title").get_text(strip=True)
+                    
+                    # Skip irrelevant updates to optimize processing speeds
+                    if not any(keyword in title_text.upper() for keyword in ["BURSARY", "PERMIT", "RATES"]):
+                        continue
+                        
+                    raw_date = element.find("span", class_="closing-date").get_text(strip=True)
+                    # Standardize dates from standard formats (e.g., "Deadline: 15 Aug 2026")
+                    clean_date_str = raw_date.replace("Deadline:", "").strip()
+                    parsed_deadline = datetime.strptime(clean_date_str, "%d %b %Y").isoformat()
+                    
+                    link_anchor = element.find("a", class_="download-link")
+                    source_link = link_anchor['href'] if link_anchor else self.target_url
