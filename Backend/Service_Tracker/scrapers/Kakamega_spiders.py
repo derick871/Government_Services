@@ -1,4 +1,4 @@
-from datetime import datetime,deltatime
+from datetime import datetime,timedelta
 import logging
 from bs4 import BeautifulSoup
 from base_scraper import BaseScrapper
@@ -38,4 +38,32 @@ class kakamegaSpider(BaseScrapper):
 
             else:
               continue
+
+            # Handle raw time strings
+            raw_published_date= columns[1].get_text(strip=True)
+
+            base_date = datetime.strptime(raw_published_date, "%Y-%m-%d")
+            calculated_deadline = (base_date + timedelta(days=30)).isoformat()
+                    
+            link_element = columns[2].find("a")
+            source_link = link_element['href'] if link_element else self.target_url
+
+            notice_payload={
+               "county_id": "key_County_037",
+               "title": "title_text",
+               "service_type": "service",
+               "deadline": "calculated_deadline",
+               "requirement": "Detected in original document",
+               "source_url": "source_link"
+            }
+
+            extracted_records.append(notice_payload)
+
+        except Exception as row_error:
+           logger.error("Failed to parse inner row block to kakamega spiders")
+
+        except Exception as system_error:
+            logger.critical(f"Kakamega execution failure occurred: {str(system_error)}")
+
+            return extracted_records
 
