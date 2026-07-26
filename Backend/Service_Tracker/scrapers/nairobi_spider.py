@@ -38,3 +38,22 @@ class NairobiSpiders(BaseScrapper):
                     
                     link_anchor = element.find("a", class_="download-link")
                     source_link = link_anchor['href'] if link_anchor else self.target_url
+                    # Construct structural transaction payload matching standard schema models
+                    notice_payload = {
+                        "county_id": "KE-COUNTY-047",
+                        "service_type": "BURSARY" if "BURSARY" in title_text.upper() else "BUSINESS_PERMIT",
+                        "title": title_text,
+                        "deadline": parsed_deadline,
+                        "requirements": [req.get_text(strip=True) for req in element.find_all("li", class_="req-item")],
+                        "source_url": source_link
+                    }
+                    extracted_records.append(notice_payload)
+                    
+                except Exception as entry_error:
+                    logger.error(f"Failed parsing inner notice elements block element: {str(entry_error)}")
+                    continue
+                    
+        except Exception as system_error:
+            logger.critical(f"Nairobi structural spider crash encountered: {str(system_error)}")
+            
+    return extracted_records
