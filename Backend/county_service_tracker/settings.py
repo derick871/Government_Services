@@ -71,6 +71,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'county_service_tracker.wsgi.application'
 
+AUTH_USER_MODEL = 'authentication.User'
 
 # Database Configuration
 # Swapped from SQLite to an enterprise-grade PostgreSQL engine

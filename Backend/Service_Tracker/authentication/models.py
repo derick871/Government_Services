@@ -43,7 +43,10 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = [] # Email & Password are required by default now
+    # Email & Password are required by default now
+
+    def __str__(self):
+             REQUIRED_FIELDS = [] 
 
     def __str__(self):
         return f"{self.email} ({self.role})"
