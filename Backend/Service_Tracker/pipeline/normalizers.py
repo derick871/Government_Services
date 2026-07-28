@@ -5,13 +5,13 @@ from Service_Tracker.models import CountyNotice
 
 logger = logging.getLogger(__name__)
 
-class NoticeNomalizer:
+class NoticeNormalizer:
     REQUIRED_FIELDS = {"county_id", "title", "service_type", "deadline", "source_url"}
     VALID_SERVICES = {"LAND_RATE", "SINGLE_BUSINESS_PERMIT", "BURSARY", "HEALTH_CERTIFICATE", "OTHER"}
 
     @classmethod
 
-    def nomalize_and_save(cls, raw_payload):
+    def normalize_and_save(cls, raw_payload):
         try:
             # Structural Validation
             missing_fields = cls.REQUIRED_FIELDS - set(raw_payload.keys())
