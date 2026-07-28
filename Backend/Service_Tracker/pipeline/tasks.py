@@ -1,4 +1,4 @@
-from scrapers.nairobi_spider import NairobiSpider
+from Backend.Service_Tracker.pipeline.scrapers.nairobi_spider import NairobiSpider
 from pipeline.normalizers import NoticeNormalizer
 from pipeline.utils import CommunicationHub
 

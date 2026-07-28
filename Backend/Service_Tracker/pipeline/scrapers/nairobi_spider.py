@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 from bs4 import BeautifulSoup
-from base_scraper import BaseScrapper
+from Backend.Service_Tracker.pipeline.scrapers.base_scraper import BaseScrapper
 
 logger = logging.getLogger(__name__)
 

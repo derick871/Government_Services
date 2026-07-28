@@ -1,7 +1,7 @@
 from Service_Tracker.models import CountyNotice
-from scrapers.Kakamega_spiders import KakamegaSpiders
+from Backend.Service_Tracker.pipeline.scrapers.Kakamega_spiders import KakamegaSpiders
 from Service_Tracker import apps
-from scrapers.nairobi_spider import NairobiSpiders
+from Backend.Service_Tracker.pipeline.scrapers.nairobi_spider import NairobiSpiders
 
 @apps.tasks
 
