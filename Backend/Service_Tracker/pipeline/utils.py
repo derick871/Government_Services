@@ -51,5 +51,17 @@ class CommunicationHub:
         Pushes a standard formatting transactional notification email to a citizen user.
         """
         try:
+            send_mail(
+                subject=subject,
+                message=template_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[recipient_email],
+                fail_silently=False,
+            )
+            logger.info(f"Successfully transmitted notification email message to {recipient_email}")
+            return True
+        except Exception as email_err:
+            logger.error(f"Transactional system mail routing delivery failure: {str(email_err)}")
+            return False
 
 
