@@ -1,0 +1,10 @@
+django>=5.0,<6.0
+djangorestframework
+django-cors-headers
+djangorestframework-simplejwt
+celery
+redis
+requests
+beautifulsoup4
+python-dotenv
+psycopg2-binary
