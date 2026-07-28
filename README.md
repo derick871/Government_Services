@@ -1,4 +1,4 @@
-# County Government Service Tracker
+# Government Service Tracker
 
 An enterprise-ready civic governance portal designed to solve public infrastructure information fragmentation caused by political devolution. This platform bridges the transparency gap by aggregating distributed regional data streams, tracking application processes using a rigid Finite State Machine, and alerting citizens of critical milestones through automated SMS and email hooks.
 
@@ -104,7 +104,7 @@ Distributed under the MIT License. See the block text layout below for legal aut
 
 MIT License
 
-Copyright (c) 2026 County Government Service Tracker Contributors
+Copyright (c) 2026 Derick
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -113,3 +113,13 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
