@@ -33,11 +33,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # Third-Party Infrastructure Extensions
     'rest_framework',
+    'simplejwt'
     'corsheaders',
     
-    # Custom Decoupled Core Apps
     'Service_Tracker',
 ]
 
@@ -74,7 +73,6 @@ WSGI_APPLICATION = 'county_service_tracker.wsgi.application'
 AUTH_USER_MODEL = 'authentication.User'
 
 # Database Configuration
-# Swapped from SQLite to an enterprise-grade PostgreSQL engine
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
