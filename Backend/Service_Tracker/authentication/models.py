@@ -25,3 +25,26 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True.")
 
         return self.create_user(email, password, **extra_fields)
+
+class User(AbstractUser):
+    
+    ROLE_CHOICES = (
+        ('ADMIN', 'System Administrator'),
+        ('OFFICER', 'County Government Officer'),
+        ('CITIZEN', 'Standard Citizen Account'),
+    )
+
+    username = None # Remove standard username field
+    email = models.EmailField("Email Address", unique=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='CITIZEN')
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    county_code = models.CharField(max_length=10, blank=True, null=True, help_index="Target region tag if role is OFFICER")
+    
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = [] # Email & Password are required by default now
+
+    def __str__(self):
+        return f"{self.email} ({self.role})"
+    
