@@ -23,7 +23,7 @@ class CommunicationHub:
             "Content-Type": "application/x-www-form-urlencoded"
         }
         data = {
-            "username": username,
+            "username": userName,
             "to": phone_number,
             "message": message
         }
