@@ -5,7 +5,7 @@ from base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
 
-class KakamegaSpider(BaseScraper):
+class KakamegaSpiders(BaseScraper):
     def __init__(self):
         super().__init__()
         self.target_url = "https://kakamega.co.ke/category/announcements"
