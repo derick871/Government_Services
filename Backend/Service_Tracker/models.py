@@ -1,5 +1,63 @@
 from django.conf import settings
 from django.db import models
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+
+# ==========================================
+# IDENTITY & ACCESS LAYER (RBAC)
+# ==========================================
+
+class CustomUserManager(BaseUserManager):
+    """Define a model manager for User model with no username field (uses email)."""
+    
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("The Email field must be set")
+        email = self.normalize_email(email)
+        extra_fields.setdefault("is_active", True)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("role", "ADMIN")
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(email, password, **extra_fields)
+
+
+class User(AbstractUser):
+    """Custom user model implementing strict Role-Based Access Control (RBAC)."""
+    ROLE_CHOICES = (
+        ('ADMIN', 'System Administrator'),
+        ('OFFICER', 'County Government Officer'),
+        ('CITIZEN', 'Standard Citizen Account'),
+    )
+
+    username = None 
+    email = models.EmailField("Email Address", unique=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='CITIZEN')
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    county_code = models.CharField(max_length=10, blank=True, null=True, help_text="Target region tag if role is OFFICER")
+    
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return f"{self.email} ({self.role})"
+
+
+# ==========================================
+# BUSINESS LOGIC & WORKFLOW LAYER
+# ==========================================
 
 class CountyNotice(models.Model):
     """Stores public service announcements and deadlines aggregated by background scrapers."""
@@ -10,7 +68,7 @@ class CountyNotice(models.Model):
         ('HEALTH_CERT', 'Public Health Certificate'),
     ]
 
-    county_id = models.CharField(max_length=50, help_text="e.g., KE-COUNTY-047")
+    county_id  = models.CharField(max_length=50, help_text="e.g., KE-COUNTY-047")
     service_type = models.CharField(max_length=30, choices=SERVICE_TYPES)
     title = models.CharField(max_length=255)
     deadline = models.DateTimeField(null=True, blank=True)
@@ -30,7 +88,6 @@ class CountyNotice(models.Model):
 
 class Application(models.Model):
     """Tracks a citizen's specific application workflow pipeline."""
-    # Using settings.AUTH_USER_MODEL string reference avoids circular imports
     citizen = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
@@ -61,7 +118,6 @@ class StatusLog(models.Model):
     from_state = models.CharField(max_length=30)
     to_state = models.CharField(max_length=30)
     
-    # Corrected User model reference
     changed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.SET_NULL, 
@@ -73,7 +129,6 @@ class StatusLog(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
-        # Guardrails to protect data integrity of audit trails
         get_latest_by = 'timestamp'
 
     def __str__(self):

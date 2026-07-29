@@ -33,12 +33,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    # Third-Party Architecture Ecosystem
     'rest_framework',
-    'simplejwt'
-    'corsheaders',
+    'corsheaders',  
     
-    'Service_Tracker',
+    # Custom Core System Apps
+    'Service_Tracker', 
 ]
+
+# Unified Identity Blueprint Router mapping custom RBAC User profiles
+AUTH_USER_MODEL = 'Service_Tracker.User'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # Must be placed at the top to intercept React requests
@@ -70,15 +74,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'county_service_tracker.wsgi.application'
 
-AUTH_USER_MODEL = 'authentication.User'
 
 # Database Configuration
+# Fallback credentials configured to point cleanly to standard local deployment profiles
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'county_tracker'),
         'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'), # Ensure this matches your local pgAdmin server password
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
@@ -87,9 +91,10 @@ DATABASES = {
 
 # Cross-Origin Resource Sharing (CORS) Configuration
 # Essential for allowing your standalone React Single Page Application to communicate with this API
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Default Vite local client server mapping port
-]
+CORS_ALLOWED_ORIGINS = os.getenv(
+    'CORS_ALLOWED_ORIGINS', 
+    'http://localhost:5173 http://127.0.0.1:5173'
+).split()
 
 
 # Django REST Framework Settings with Stateless JWT Security Configurations
@@ -123,8 +128,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'placeholder@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = f"County Service Tracker <{EMAIL_HOST_USER}>"
 
 
@@ -147,7 +152,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Africa/Nairobi'  # Updated to match local regional context
+TIME_ZONE = 'Africa/Nairobi'  # Set to match local regional context
 USE_I18N = True
 USE_TZ = True
 

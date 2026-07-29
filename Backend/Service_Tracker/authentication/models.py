@@ -34,7 +34,7 @@ class User(AbstractUser):
         ('CITIZEN', 'Standard Citizen Account'),
     )
 
-    username = None # Remove standard username field
+    username = None 
     email = models.EmailField("Email Address", unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='CITIZEN')
     phone_number = models.CharField(max_length=15, blank=True, null=True)
