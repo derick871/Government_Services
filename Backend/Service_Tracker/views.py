@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Application, CountyNotice
-from .serializers import ApplicationSerializer, CountyNoticeSerializer
+from .serializers import  CountyNoticeSerializer
 from .FSM_transitions import validate_transition, InvalidStateTransitionError
 
 

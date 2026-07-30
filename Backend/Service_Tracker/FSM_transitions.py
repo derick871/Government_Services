@@ -35,16 +35,13 @@ class InvalidStateTransitionError(Exception):
 
 
 def get_allowed_next_states(current_state):
-    """
-    FIXED: Added this missing function required by serializers.py.
-    Returns a list of legal next statuses based on the current application state.
-    """
+
+   
     return VALID_TRANSITIONS.get(current_state, [])
 
 
 def validate_transition(current_state, target_state, user_role=None):
     """
-    Validates state transitions for County Service Applications.
     Ensures roles have permission to shift workflow lifecycles.
     """
     # Safeguard against unexpected state formats or case mismatches
