@@ -2,6 +2,21 @@
 
 An enterprise-ready civic governance portal designed to solve public infrastructure information fragmentation caused by political devolution. This platform bridges the transparency gap by aggregating distributed regional data streams, tracking application processes using a rigid Finite State Machine, and alerting citizens of critical milestones through automated SMS and email hooks.
 
+ ## The Citizen's Problem: "The Black Hole"
+The Issue: When citizens apply for local government services (like business permits, building approvals, or bursaries), they submit their paperwork and enter a "black hole." They have no idea who is handling their file, where it is stuck, or how long it will take.
+
+ **Solution:** By generating an immutable tracking code (TRK-XXXXXXXX) instantly upon submission, citizens can input this token into a public search field (ApplicationDetailView) to see the transparent, real-time lifecycle status of their request without having to visit county offices physically.
+
+ ## The Civil Servant's Problem: "Process Disorganization"
+The Issue: Without an enforced workflow pipeline, files get misplaced, actions are performed out of sequence (e.g., approving an application before it has been formally verified), and there is no audit log showing who authorized a particular change.
+
+ **Solution:** The Finite State Machine (FSM_transitions.py) acts as a digital guardrail. It strictly blocks illegal operations (like jumping from SUBMITTED straight to APPROVED). Staff can only move an application to the next logical step, and every state transition forces an entries logging step into the StatusLog table—instantly creating absolute professional accountability.
+
+ ## The Structural Problem: "Fragmented Operations"
+The Issue: Public updates, tenders, and civic announcements are usually spread across outdated websites, physical notice boards, or social media pages, making them incredibly difficult for the everyday public to find reliably.
+
+**Solution:** The application centralizes civic data feeds (CountyNoticeListView & CountyNoticeByCountyView) right alongside application portals. This transforms a fragmented set of offices into a single, cohesive, digital gateway.
+
 ## Key Features
 
 - **Unified Civic Service Registry:** Replaces dozens of fragmented, slow-loading legacy county web landing pages with a clean, centralized web workspace.
