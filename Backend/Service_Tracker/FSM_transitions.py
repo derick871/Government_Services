@@ -17,14 +17,13 @@ VALID_STATES = {
     STATE_REJECTED
 }
 
-# ---valid transitions matrix
-
+# Unified single source of truth for your FSM transition engine
 VALID_TRANSITIONS = {
     STATE_SUBMITTED: [STATE_UNDER_REVIEW],
     STATE_UNDER_REVIEW: [STATE_ACTION_REQUIRED, STATE_VERIFIED, STATE_REJECTED],
     STATE_ACTION_REQUIRED: [STATE_UNDER_REVIEW, STATE_REJECTED],
     STATE_VERIFIED: [STATE_APPROVED, STATE_REJECTED],
-    # Terminal state cannot do transition anywhere
+    # Terminal states cannot transition anywhere
     STATE_APPROVED: [],
     STATE_REJECTED: []
 }
@@ -34,20 +33,27 @@ class InvalidStateTransitionError(Exception):
     """Raised when an application attempts an illegal state lifecycle shift."""
     pass
 
-def validate_transition(current_state, target_state, user_role):
+
+def get_allowed_next_states(current_state):
+    """
+    FIXED: Added this missing function required by serializers.py.
+    Returns a list of legal next statuses based on the current application state.
+    """
+    return VALID_TRANSITIONS.get(current_state, [])
+
+
+def validate_transition(current_state, target_state, user_role=None):
     """
     Validates state transitions for County Service Applications.
     Ensures roles have permission to shift workflow lifecycles.
     """
-    # Example state validation map matching your RBAC architecture
-    VALID_TRANSITIONS = {
-        'PENDING': ['UNDER_REVIEW', 'REJECTED'],
-        'UNDER_REVIEW': ['APPROVED', 'REJECTED', 'FLAGGED'],
-        'FLAGGED': ['UNDER_REVIEW', 'REJECTED'],
-    }
+    # Safeguard against unexpected state formats or case mismatches
+    if current_state not in VALID_TRANSITIONS:
+        raise InvalidStateTransitionError(f"Current state '{current_state}' is unrecognized by the workflow engine.")
+
+    allowed_states = get_allowed_next_states(current_state)
     
-    # Simple guard clause validation check
-    if target_state not in VALID_TRANSITIONS.get(current_state, []):
+    if target_state not in allowed_states:
         raise InvalidStateTransitionError(
             f"Illegal lifecycle transition from {current_state} to {target_state}."
         )
