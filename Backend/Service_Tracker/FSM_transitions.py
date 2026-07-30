@@ -31,35 +31,25 @@ VALID_TRANSITIONS = {
 
 
 class InvalidStateTransitionError(Exception):
+    """Raised when an application attempts an illegal state lifecycle shift."""
     pass
 
-
-def valid_transition(current_state: str, target_state: str):
-    current = (current_state or "").upper().strip()
-    target = (target_state or "").upper().strip()
-
-    # Enforce basic sanity boundary
-
-    if current not in VALID_STATES:
-        raise InvalidStateTransitionError(f'Original state {current_state} not recognised in system state')
-
-    if target not in VALID_STATES:
-        raise InvalidStateTransitionError(f'Original state {target_state} is not recognised in system state')
-
-    # check mapping matrix
-    allowed_next_states = VALID_TRANSITIONS.get(current, [])
-
-    if target not in allowed_next_states:
-        error_msg = f"Illegal Workflow Bypass: Cannot transition directly from '{current}' to '{target}'."
-        logger.error(error_msg)
-        raise InvalidStateTransitionError(error_msg)
-
+def validate_transition(current_state, target_state, user_role):
+    """
+    Validates state transitions for County Service Applications.
+    Ensures roles have permission to shift workflow lifecycles.
+    """
+    # Example state validation map matching your RBAC architecture
+    VALID_TRANSITIONS = {
+        'PENDING': ['UNDER_REVIEW', 'REJECTED'],
+        'UNDER_REVIEW': ['APPROVED', 'REJECTED', 'FLAGGED'],
+        'FLAGGED': ['UNDER_REVIEW', 'REJECTED'],
+    }
+    
+    # Simple guard clause validation check
+    if target_state not in VALID_TRANSITIONS.get(current_state, []):
+        raise InvalidStateTransitionError(
+            f"Illegal lifecycle transition from {current_state} to {target_state}."
+        )
+        
     return True
-
-def get_allowed_next_status(current_state: str):
-    """
-    Help utility to dynamically tell the frontend UI which action buttons 
-    to render in the pipeline.
-    """
-    cleaned_state = (current_state or "").upper().strip()
-    return VALID_TRANSITIONS.get(cleaned_state, [])

@@ -6,6 +6,7 @@ Refined for Capstone Production Standards.
 import os
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
 from dotenv import load_dotenv
 
 # Load environment variables from a root .env file
@@ -80,11 +81,11 @@ WSGI_APPLICATION = 'county_service_tracker.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'county_tracker'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'), # Ensure this matches your local pgAdmin server password
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'NAME': config("DATABASE_NAME"),
+        'USER': config("DATABASE_USER"),
+        'PASSWORD': config("DATABASE_PASSWORD"),
+        'PORT': config("DATABASE_PORT"),
+        'HOST': config("DATABASE_HOST"),
     }
 }
 
