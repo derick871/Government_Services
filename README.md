@@ -64,12 +64,12 @@ Before configuration, ensure you have the following environments installed local
 - Git
 - Python 3.10+ or Node.js v18+
 - PostgreSQL
-- Redis Server
 
 ### 1. Repository Retrieval
 Clone the system code tree locally using terminal configurations:
 ```bash
-git clone https://github.com/your-organization/county-service-tracker.git
+git clone https://github.com/derick871/Government_Services_Tracker
+git
 cd county-service-tracker
 ```
 
@@ -78,7 +78,7 @@ Navigate to the service engine directory, establish a protected environment cont
 ```bash
 cd backend
 python -m venv venv
-source venv/scripts/activate  # On Windows use: venv\Scripts\activate
+source venv/scripts/activate  
 
 # Install essential execution libraries
 pip install -r requirements.txt
