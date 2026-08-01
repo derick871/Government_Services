@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     
     # Third-Party Architecture Ecosystem
     'rest_framework',
-    'corsheaders',  
+    'drf_spectacular',
+    'corsheaders',
+    'rest_framework_simplejwt',  
     
     # Custom Core System Apps
     'Service_Tracker', 
