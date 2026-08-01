@@ -1,28 +1,58 @@
 """
-URL configuration for county_service_tracker project.
+Root URL Configuration for drf_project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+This module establishes the top-level routing architecture for the application,
+segregating administrative boundaries, core API endpoints, authentication mechanisms, 
+and automated OpenAPI documentation schema views.
 """
+
 from django.contrib import admin
-from django.urls import path,include,re_path
+from django.urls import include, path
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
+from rest_framework_simplejwt.views import TokenRefreshView
 
-urlpatterns = [
-    path('admin/doc/', include('django.contrib.admindocs.urls')),
-    path('admin/', admin.site.urls),
+# -----------------------------------------------------------------------------
+# CORE ROUTING PATHS
+# -----------------------------------------------------------------------------
+ADMIN_URLS = [
+    path("admin/", admin.site.urls),
+]
 
-      re_path(
-        r'^api/?', 
-        include(('Service_Tracker.urls', 'service_tracker'), namespace='service_tracker')
+AUTH_URLS = [
+    # Custom token pair generation (Login)
+    path("api/v1/auth/token/", TokenRefreshView.as_view(), name="token_obtain_pair"),
+    # Standard JWT refresh endpoint
+    path("api/v1/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+]
+
+DOCUMENTATION_URLS = [
+    path("api/v1/schema/", SpectacularAPIView.as_view(), name="api_schema"),
+    path(
+        "api/v1/docs/swagger/",
+        SpectacularSwaggerView.as_view(url_name="api_schema"),
+        name="swagger_ui",
+    ),
+    path(
+        "api/v1/docs/redoc/",
+        SpectacularRedocView.as_view(url_name="api_schema"),
+        name="redoc_ui",
     ),
 ]
+
+APPLICATION_URLS = [
+    path("api/v1/", include("Service_Tracker.urls")),
+]
+
+# -----------------------------------------------------------------------------
+# MAIN URLPATTERNS REGISTRY
+# -----------------------------------------------------------------------------
+urlpatterns = (
+    ADMIN_URLS 
+    + AUTH_URLS 
+    + DOCUMENTATION_URLS 
+    + APPLICATION_URLS
+)
