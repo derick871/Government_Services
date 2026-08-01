@@ -27,7 +27,7 @@ urlpatterns = [
     # ==========================
     path(
         "notices/",
-        views.CountyNoticeListView.as_view(),  # Fixed: View class uncommented so path is valid
+        views.CountyNoticeListView.as_view(),  
         name="notice-list",
     ),
     path(
