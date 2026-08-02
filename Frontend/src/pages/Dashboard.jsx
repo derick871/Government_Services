@@ -7,7 +7,7 @@ export default function Dashboard() {
 
   //  Fetch dynamic aggregation dashboard metrics from backend
   useEffect(() => {
-    fetch('/api/citizen/dashboard-metrics')
+    fetch('/api/Service_Tracker')
       .then((res) => {
         if (!res.ok) throw new Error('Failed to pull system telemetry dashboard metrics.');
         return res.json();
@@ -31,7 +31,7 @@ export default function Dashboard() {
       <div className="bg-slate-800 p-8 rounded-xl shadow-sm text-white">
         <h1 className="text-3xl font-bold tracking-tight">Citizen Dashboard</h1>
         <p className="text-slate-300 text-lg mt-2">Welcome back to your  County Portal. Manage your services cleanly online.</p>
-        
+
       </div>
 
       {/* Metrics Layout Configuration Grid */}

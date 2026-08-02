@@ -12,17 +12,16 @@ export default function TrackService({ applicationId = "123" }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 2. Fetch data from backend on mount or when id changes
+  //  Fetch data from backend on mount or when id changes
   useEffect(() => {
     setLoading(true);
-    // Replace this template fetch with your actual API endpoint (e.g., axios or fetch)
     fetch(`/api/applications/${applicationId}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to load tracking data.');
         return res.json();
       })
       .then((data) => {
-        setApplication(data); // Expecting payload: { currentStatus: 'APPROVED' | 'UNDER_REVIEW' | 'REJECTED' }
+        setApplication(data); 
         setLoading(false);
       })
       .catch((err) => {
@@ -31,13 +30,12 @@ export default function TrackService({ applicationId = "123" }) {
       });
   }, [applicationId]);
 
-  // 3. Handle asynchronous UI states defensively
+  // Handle asynchronous UI states defensively
   if (loading) return <div className="p-8 text-slate-500 animate-pulse">Loading tracking history...</div>;
   if (error) return <div className="p-8 text-red-500 font-medium">Error: {error}</div>;
   if (!application) return <div className="p-8 text-slate-500">No application data found.</div>;
 
-  // 4. Determine current index in the sequential timeline
-  const status = application.currentStatus; // e.g., 'APPROVED'
+  const status = application.currentStatus; 
   
   // Map real terminal states back to our visual pipeline step index
   let currentStepIndex = 0;

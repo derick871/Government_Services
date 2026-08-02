@@ -18,4 +18,11 @@ export default function App() {
       </Routes>
     </BrowserRouter>
   );
+
+  return (
+    <div className="min-h-screen bg-slate-100">
+      {/* 2. Place it here like a custom HTML tag */}
+      <ServiceTracker /> 
+    </div>
+  );
 }
