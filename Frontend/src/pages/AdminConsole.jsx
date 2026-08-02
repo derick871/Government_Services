@@ -5,7 +5,7 @@ export default function AdminConsole() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 1. Fetch unreviewed or all applications from the backend
+  // Fetch unreviewed or all applications from the backend
   useEffect(() => {
     fetch('/api/admin/applications')
       .then((res) => {
@@ -13,7 +13,7 @@ export default function AdminConsole() {
         return res.json();
       })
       .then((data) => {
-        setApplications(data); // Expecting an array of objects
+        setApplications(data); 
         setLoading(false);
       })
       .catch((err) => {
@@ -22,13 +22,12 @@ export default function AdminConsole() {
       });
   }, []);
 
-  // 2. Action Handler: What happens when an admin hits "Review"
+  // Action Handler: What happens when an admin hits "Review"
   const handleReview = (id) => {
-    console.log(`Navigating to review portal or opening workflow modal for application: ${id}`);
-    // Real implementation tip: route user to `/admin/review/${id}` or toggle a modal state
+    console.log(`Navigating to review portal or opening workflow  for application: ${id}`);
   };
 
-  // 3. Defensive Loading & Error States
+  // Defensive Loading & Error States
   if (loading) return <div className="p-8 text-slate-600 animate-pulse font-medium">Loading admin console records...</div>;
   if (error) return <div className="p-8 text-red-600 font-semibold">Error: {error}</div>;
 
@@ -36,8 +35,8 @@ export default function AdminConsole() {
     <div className="p-8 max-w-7xl mx-auto">
       <div className="sm:flex sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Admin Console</h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <h1 className="text-3xl font-bold text-gray-750">Admin Console</h1>
+          <p className="mt-2 text-sm text-gray-500">
             Overview of submitted county service applications requiring review.
           </p>
         </div>
