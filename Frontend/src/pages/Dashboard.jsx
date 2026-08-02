@@ -30,7 +30,8 @@ export default function Dashboard() {
       {/* Welcome Banner Section */}
       <div className="bg-slate-800 p-8 rounded-xl shadow-sm text-white">
         <h1 className="text-3xl font-bold tracking-tight">Citizen Dashboard</h1>
-        <p className="text-slate-300 text-lg mt-2">Welcome back to your unified County Portal. Manage your services cleanly online.</p>
+        <p className="text-slate-300 text-lg mt-2">Welcome back to your  County Portal. Manage your services cleanly online.</p>
+        
       </div>
 
       {/* Metrics Layout Configuration Grid */}
@@ -57,7 +58,7 @@ function Card({ title, value, type }) {
   };
 
   return (
-    <div className={`bg-white shadow-sm border border-slate-200/80 rounded-xl p-6 transition-all hover:shadow-md ${typeStyles[type] || ''}`}>
+    <div className={`bg-amber-400 shadow-sm border border-slate-200/80 rounded-xl p-6 transition-all hover:shadow-md ${typeStyles[type] || ''}`}>
       <h3 className="text-sm font-semibold tracking-wide uppercase text-slate-500">{title}</h3>
       <p className="text-4xl font-extrabold text-slate-900 mt-2 tracking-tight">
         {value.toLocaleString()}
