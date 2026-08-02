@@ -13,7 +13,7 @@ export default function Login() {
 return (
     <div className="bg:slate-750, m-10">
         <form
-        onSubmit={login}>
+        onSubmit={Login}>
             <h2>
                 Citizen Login
             </h2>
