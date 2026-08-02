@@ -1,12 +1,12 @@
-import {link} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 export default function Home() {
 
     return (
         <div className='bg:slate-750, m-10'>
         <div className="text-center, mt-5 text-3xl, text:amber-500">
-        <h1>County_Service_Tracker </h1>
-        <p>Easier,faster and transparent county services</p>
+            <h1>County_Service_Tracker </h1>
+            <p>Easier,faster and transparent county services</p>
         </div>
 
         <div>
