@@ -1,58 +1,179 @@
 import logging
+
 logger = logging.getLogger(__name__)
 
-STATE_SUBMITTED = "SUBMIT"
+# ======================
+# Workflow States
+# ======================
+
+STATE_SUBMITTED = "SUBMITTED"
 STATE_UNDER_REVIEW = "UNDER_REVIEW"
 STATE_ACTION_REQUIRED = "ACTION_REQUIRED"
 STATE_VERIFIED = "VERIFIED"
 STATE_APPROVED = "APPROVED"
 STATE_REJECTED = "REJECTED"
 
-VALID_STATES = {
-    STATE_SUBMITTED,
-    STATE_UNDER_REVIEW,
-    STATE_ACTION_REQUIRED,
-    STATE_VERIFIED,
-    STATE_APPROVED,
-    STATE_REJECTED
-}
 
-# Unified single source of truth for your FSM transition engine
+# ======================
+# Valid Transitions
+# ======================
+
 VALID_TRANSITIONS = {
-    STATE_SUBMITTED: [STATE_UNDER_REVIEW],
-    STATE_UNDER_REVIEW: [STATE_ACTION_REQUIRED, STATE_VERIFIED, STATE_REJECTED],
-    STATE_ACTION_REQUIRED: [STATE_UNDER_REVIEW, STATE_REJECTED],
-    STATE_VERIFIED: [STATE_APPROVED, STATE_REJECTED],
-    # Terminal states cannot transition anywhere
+    STATE_SUBMITTED: [
+        STATE_UNDER_REVIEW,
+    ],
+
+    STATE_UNDER_REVIEW: [
+        STATE_ACTION_REQUIRED,
+        STATE_VERIFIED,
+        STATE_REJECTED,
+    ],
+
+    STATE_ACTION_REQUIRED: [
+        STATE_UNDER_REVIEW,
+        STATE_REJECTED,
+    ],
+
+    STATE_VERIFIED: [
+        STATE_APPROVED,
+        STATE_REJECTED,
+    ],
+
     STATE_APPROVED: [],
-    STATE_REJECTED: []
+
+    STATE_REJECTED: [],
 }
 
 
-class InvalidStateTransitionError(Exception):
-    """Raised when an application attempts an illegal state lifecycle shift."""
+# ======================
+# Role Permissions
+# ======================
+
+ROLE_PERMISSIONS = {
+    "ADMIN": {
+        STATE_UNDER_REVIEW,
+        STATE_ACTION_REQUIRED,
+        STATE_VERIFIED,
+        STATE_APPROVED,
+        STATE_REJECTED,
+    },
+
+    "OFFICER": {
+        STATE_UNDER_REVIEW,
+        STATE_ACTION_REQUIRED,
+        STATE_VERIFIED,
+        STATE_APPROVED,
+        STATE_REJECTED,
+    },
+
+    "CITIZEN": set(),
+}
+
+
+# ======================
+# Custom Exception
+# ======================
+
+class InvalidStateTransition(Exception):
+    """Raised when a transition is not allowed."""
     pass
 
 
-def get_allowed_next_states(current_state):
+# ======================
+# Get Next States
+# ======================
 
-   
+def get_allowed_next_states(current_state):
+    """
+    Return valid next states.
+    """
     return VALID_TRANSITIONS.get(current_state, [])
 
 
-def validate_transition(current_state, target_state, user_role=None):
+# ======================
+# Validate State
+# ======================
+
+def is_valid_state(state):
     """
-    Ensures roles have permission to shift workflow lifecycles.
+    Check whether a state exists.
     """
-    # Safeguard against unexpected state formats or case mismatches
-    if current_state not in VALID_TRANSITIONS:
-        raise InvalidStateTransitionError(f"Current state '{current_state}' is unrecognized by the workflow engine.")
+    return state in VALID_TRANSITIONS
+
+
+# ======================
+# Validate Transition
+# ======================
+
+def validate_transition(current_state, target_state, user_role):
+    """
+    Validate workflow transition.
+    """
+
+    if not is_valid_state(current_state):
+        raise InvalidStateTransition(
+            f"Unknown state: {current_state}"
+        )
+
+    if not is_valid_state(target_state):
+        raise InvalidStateTransition(
+            f"Unknown state: {target_state}"
+        )
 
     allowed_states = get_allowed_next_states(current_state)
-    
+
     if target_state not in allowed_states:
-        raise InvalidStateTransitionError(
-            f"Illegal lifecycle transition from {current_state} to {target_state}."
+        raise InvalidStateTransition(
+            f"Cannot move from '{current_state}' to '{target_state}'."
         )
-        
+
+    allowed_roles = ROLE_PERMISSIONS.get(user_role, set())
+
+    if target_state not in allowed_roles:
+        raise InvalidStateTransition(
+            f"{user_role} cannot change status to '{target_state}'."
+        )
+
+    logger.info(
+        "%s -> %s (%s)",
+        current_state,
+        target_state,
+        user_role,
+    )
+
     return True
+
+
+# ======================
+# Check Transition
+# ======================
+
+def can_transition(current_state, target_state, user_role):
+    """
+    Return True if transition is valid.
+    """
+
+    try:
+        validate_transition(
+            current_state,
+            target_state,
+            user_role,
+        )
+        return True
+
+    except InvalidStateTransition:
+        return False
+
+
+# ======================
+# Final State
+# ======================
+
+def is_terminal_state(state):
+    """
+    Check whether the workflow is complete.
+    """
+    return state in {
+        STATE_APPROVED,
+        STATE_REJECTED,
+    }
