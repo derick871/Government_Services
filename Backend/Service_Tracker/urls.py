@@ -1,57 +1,76 @@
 from django.urls import path
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
 )
-from . import views
+
+from .views import (
+    CountyNoticeListView,
+    CountyNoticeByCountyView,
+    ApplicationListCreateView,
+    ApplicationDetailView,
+    UpdateApplicationStatusView,
+)
+from .authentication import LoginView
+
 
 app_name = "Service_Tracker"
 
+
 urlpatterns = [
-    # ==========================
-    # Authentication Endpoints
-    # ==========================
+
+    # ======================
+    # Authentication
+    # ======================
+
     path(
-        "token/",
-        TokenObtainPairView.as_view(),
-        name="token_obtain_pair",
+        "auth/login/",
+        LoginView.as_view(),
+        name="login",
     ),
+
     path(
-        "token/refresh/",
+        "auth/refresh/",
         TokenRefreshView.as_view(),
         name="token_refresh",
     ),
 
-    # ==========================
+
+    # ======================
     # County Notices
-    # ==========================
+    # ======================
+
     path(
         "notices/",
-        views.CountyNoticeListView.as_view(),  
-        name="notice-list",
-    ),
-    path(
-        "notices/county/<str:county_id>/",
-        views.CountyNoticeByCountyView.as_view(),
-        name="notice-by-county",
+        CountyNoticeListView.as_view(),
+        name="notice_list",
     ),
 
-    # ==========================
+    path(
+        "notices/<str:county_id>/",
+        CountyNoticeByCountyView.as_view(),
+        name="notice_by_county",
+    ),
+
+
+    # ======================
     # Applications
-    # ==========================
+    # ======================
+
     path(
         "applications/",
-        views.ApplicationListCreateView.as_view(),
-        name="application-list-create",
+        ApplicationListCreateView.as_view(),
+        name="application_list",
     ),
+
     path(
-        "applications/track/<str:tracking_number>/",
-        views.ApplicationDetailView.as_view(),
-        name="application-detail",
+        "applications/<str:tracking_number>/",
+        ApplicationDetailView.as_view(),
+        name="application_detail",
     ),
+
     path(
-        "applications/<int:pk>/transition/",
-        views.UpdateApplicationStatusView.as_view(),
-        name="application-transition",
+        "applications/<int:pk>/status/",
+        UpdateApplicationStatusView.as_view(),
+        name="application_status",
     ),
 ]
