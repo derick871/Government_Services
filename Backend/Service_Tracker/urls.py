@@ -10,7 +10,7 @@ from .views import (
     ApplicationDetailView,
     UpdateApplicationStatusView,
 )
-from .authentication import LoginView
+from .authentications import LoginView
 
 
 app_name = "Service_Tracker"
