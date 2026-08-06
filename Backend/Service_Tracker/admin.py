@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+
 from .models import (
     User,
     CountyNotice,
@@ -7,17 +8,39 @@ from .models import (
     StatusLog,
 )
 
-# =====================================================
-# USER ADMIN
-# =====================================================
+
+# ======================
+# Status Log Inline
+# ======================
+
+class StatusLogInline(admin.TabularInline):
+    """Display application history."""
+
+    model = StatusLog
+    extra = 0
+    can_delete = False
+    readonly_fields = (
+        "from_state",
+        "to_state",
+        "changed_by",
+        "comment",
+        "timestamp",
+    )
+
+
+# ======================
+# User Admin
+# ======================
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
+    """Manage system users."""
+
     ordering = ("email",)
+
     list_display = (
         "email",
         "role",
-        "phone_number",
         "county_code",
         "is_staff",
         "is_active",
@@ -27,7 +50,6 @@ class CustomUserAdmin(UserAdmin):
         "role",
         "is_staff",
         "is_active",
-        "is_superuser",
     )
 
     search_fields = (
@@ -36,50 +58,56 @@ class CustomUserAdmin(UserAdmin):
         "county_code",
     )
 
-    readonly_fields = (
-        "last_login",
-        "date_joined",
-    )
-
     fieldsets = (
-        ("Login Information", {
-            "fields": (
-                "email",
-                "password",
-            )
-        }),
-
-        ("Personal Information", {
-            "fields": (
-                "first_name",
-                "last_name",
-                "phone_number",
-            )
-        }),
-
-        ("Role & County", {
-            "fields": (
-                "role",
-                "county_code",
-            )
-        }),
-
-        ("Permissions", {
-            "fields": (
-                "is_active",
-                "is_staff",
-                "is_superuser",
-                "groups",
-                "user_permissions",
-            )
-        }),
-
-        ("Important Dates", {
-            "fields": (
-                "last_login",
-                "date_joined",
-            )
-        }),
+        (
+            "Account",
+            {
+                "fields": (
+                    "email",
+                    "password",
+                )
+            },
+        ),
+        (
+            "Personal",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "phone_number",
+                )
+            },
+        ),
+        (
+            "Role",
+            {
+                "fields": (
+                    "role",
+                    "county_code",
+                )
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
+        (
+            "Dates",
+            {
+                "fields": (
+                    "last_login",
+                    "date_joined",
+                )
+            },
+        ),
     )
 
     add_fieldsets = (
@@ -92,13 +120,17 @@ class CustomUserAdmin(UserAdmin):
                     "password1",
                     "password2",
                     "role",
-                    "phone_number",
                     "county_code",
                     "is_staff",
-                    "is_active",
+                    "is_superuser",
                 ),
             },
         ),
+    )
+
+    readonly_fields = (
+        "last_login",
+        "date_joined",
     )
 
     filter_horizontal = (
@@ -107,12 +139,13 @@ class CustomUserAdmin(UserAdmin):
     )
 
 
-# =====================================================
-# COUNTY NOTICE ADMIN
-# =====================================================
+# ======================
+# County Notice Admin
+# ======================
 
 @admin.register(CountyNotice)
 class CountyNoticeAdmin(admin.ModelAdmin):
+    """Manage county notices."""
 
     list_display = (
         "title",
@@ -133,7 +166,7 @@ class CountyNoticeAdmin(admin.ModelAdmin):
     )
 
     ordering = (
-        "-deadline",
+        "-scraped_at",
     )
 
     readonly_fields = (
@@ -141,26 +174,13 @@ class CountyNoticeAdmin(admin.ModelAdmin):
     )
 
 
-# =====================================================
-# APPLICATION ADMIN
-# =====================================================
-
-class StatusLogInline(admin.TabularInline):
-    model = StatusLog
-    extra = 0
-    readonly_fields = (
-        "from_state",
-        "to_state",
-        "changed_by",
-        "comment",
-        "timestamp",
-    )
-
-    can_delete = False
-
+# ======================
+# Application Admin
+# ======================
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
+    """Manage applications."""
 
     list_display = (
         "tracking_number",
@@ -173,13 +193,17 @@ class ApplicationAdmin(admin.ModelAdmin):
 
     list_filter = (
         "status",
-        "service_type",
         "county_id",
+        "service_type",
     )
 
     search_fields = (
         "tracking_number",
         "citizen__email",
+    )
+
+    ordering = (
+        "-created_at",
     )
 
     readonly_fields = (
@@ -188,19 +212,18 @@ class ApplicationAdmin(admin.ModelAdmin):
         "updated_at",
     )
 
-    inlines = [StatusLogInline]
-
-    date_hierarchy = "created_at"
-
-    list_per_page = 20
+    inlines = [
+        StatusLogInline,
+    ]
 
 
-# =====================================================
-# STATUS LOG ADMIN
-# =====================================================
+# ======================
+# Status Log Admin
+# ======================
 
 @admin.register(StatusLog)
 class StatusLogAdmin(admin.ModelAdmin):
+    """View workflow history."""
 
     list_display = (
         "application",
@@ -211,7 +234,6 @@ class StatusLogAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        "from_state",
         "to_state",
         "timestamp",
     )
@@ -219,6 +241,10 @@ class StatusLogAdmin(admin.ModelAdmin):
     search_fields = (
         "application__tracking_number",
         "changed_by__email",
+    )
+
+    ordering = (
+        "-timestamp",
     )
 
     readonly_fields = (
@@ -230,6 +256,8 @@ class StatusLogAdmin(admin.ModelAdmin):
         "timestamp",
     )
 
-    ordering = (
-        "-timestamp",
-    )
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

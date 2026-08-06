@@ -177,3 +177,5 @@ class UpdateApplicationStatusView(generics.GenericAPIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        
